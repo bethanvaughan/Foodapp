@@ -3,25 +3,16 @@ from flask_cors import CORS
 from controllers import foods
 from werkzeug import exceptions
 from flask import Flask
+import smtplib
 # from flask_mail import Mail
 
 app = Flask(__name__)
 CORS(app)
 
-# app.config['MAIL_SERVER']='smtp.mailtrap.io'
-# app.config['MAIL_PORT'] = 2525
-# app.config['MAIL_USERNAME'] = '97e041d5e367c7'
-# app.config['MAIL_PASSWORD'] = 'cfaf5b99f8bafb'
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USE_SSL'] = False
-# mail = Mail(app)
+my_email = "cairns.python@gmail.com"
+password = "grihqzcxfknjppls"
 
-# @app.route("/")
-# def index():
-#   msg = Message('Hello from the other side!', sender =   'peter@mailtrap.io', recipients = ['paul@mailtrap.io'])
-#   msg.body = "Hey Paul, sending you this email from my Flask app, lmk if it works"
-#   mail.send(msg)
-#   return "Message sent!"
+email_to = "cairns.python@gmail.com"
 
 @app.route('/')
 def home():
@@ -35,6 +26,13 @@ def foods_handler():
     }
     print(foods.index)
     resp, code = fns[request.method](request)
+    if request.method == 'GET': 
+            with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
+                connection.starttls()  # makes connection secure
+                connection.login(user=my_email, password=password)
+                connection.sendmail(from_addr=my_email,
+                                    to_addrs=email_to,
+                                    msg=f"Subject:Food has just been added to the database".encode("utf8"))
     print(resp[0])
     return jsonify(resp), code
 
